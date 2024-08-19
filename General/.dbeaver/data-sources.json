@@ -48,7 +48,10 @@
 					"enabled": true,
 					"include": ["KH_JSH"]
 				}
-			]
+			],
+			"custom-properties": {
+				"resultset.maxrows": "300"
+			}
 		},
 		"oracle_thin-1915a032ce6-3f5f599f91dfcd60": {
 			"provider": "oracle",
@@ -77,6 +80,44 @@
 					"include": ["WORKBOOK"]
 				}
 			]
+		},
+		"oracle_thin-19169c36caf-3f12c9b8028936c2": {
+			"provider": "oracle",
+			"driver": "oracle_thin",
+			"name": "시험용계정(TEST_USER/TEST1234)",
+			"save-password": true,
+			"configuration": {
+				"host": "khj-1.xyz",
+				"port": "10000",
+				"database": "XE",
+				"url": "jdbc:oracle:thin:@//khj-1.xyz:10000/XE",
+				"configurationType": "MANUAL",
+				"home": "C:\\app\\user1\\product\\18.0.0\\dbhomeXE",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"properties": {
+					"useFetchSizeWithLongColumn": "true",
+					"loginTimeout": "20",
+					"oracle.jdbc.jsonDefaultGetObjectType": "java.lang.String",
+					"oracle.jdbc.fanEnabled": "false"
+				},
+				"provider-properties": {
+					"@dbeaver-connection-type@": "BASIC",
+					"show-only-one-schema@": "false",
+					"@dbeaver-check-schema-content@": "false",
+					"@dbeaver-always-show-dba@": "false",
+					"@dbeaver-always-use-dba-views@": "false",
+					"@dbeaver-meta-use-sys-schema@": "false",
+					"@dbeaver-meta-use-simple-constraints@": "false",
+					"@dbeaver-use-rule-hint@": "false",
+					"@dbeaver-use-meta-optimizer@": "true",
+					"@dbeaver-meta-use-alternative-table-query@": "false",
+					"oracle.meta-search-in-synonyms": "false",
+					"oracle.show-date-as-date": "false",
+					"@dbeaver-sid-service@": "SERVICE"
+				},
+				"auth-model": "oracle_native"
+			}
 		}
 	},
 	"connection-types": {
