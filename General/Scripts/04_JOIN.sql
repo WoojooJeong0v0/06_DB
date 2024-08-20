@@ -41,7 +41,7 @@ SELECT EMP_ID, EMP_NAME, DEPT_CODE
 FROM EMPLOYEE;
 -- 직원번호, 직원면, 부서코드는 EMPLOYEE테이블에 조회가능
 
--- 부서명은은 DEPARTMENT테이블에서 조회 가능
+-- 부서명은 DEPARTMENT테이블에서 조회 가능
 SELECT DEPT_ID, DEPT_TITLE
 FROM DEPARTMENT;
 

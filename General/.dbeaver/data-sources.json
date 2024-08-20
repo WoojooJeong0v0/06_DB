@@ -48,10 +48,7 @@
 					"enabled": true,
 					"include": ["KH_JSH"]
 				}
-			],
-			"custom-properties": {
-				"resultset.maxrows": "300"
-			}
+			]
 		},
 		"oracle_thin-1915a032ce6-3f5f599f91dfcd60": {
 			"provider": "oracle",
