@@ -84,8 +84,22 @@ WHERE STUDENT_ADDRESS LIKE '%전주%'
 	FROM TB_PROFESSOR
 	WHERE PROFESSOR_NAME LIKE '____%';
 	
-	-- 2-3 남 교수들 이름과 나이 오름차순 조회
- -- 단 교수 중 2000 이후 출생자 없고 나이는 만 계산
+
+
+-- 6번
+-- 춘 기술대학교는 총장을 제외하고 모든 교수들이 소속 학과를 가지고 있다.
+-- 그럼 춘 기술대학교 총장의 이름을 알아낼 수 있는 SQL 문장을 작성하시오.
+SELECT PROFESSOR_NAME
+FROM TB_PROFESSOR
+WHERE DEPARTMENT_NO IS NULL;
+
+
+-- 7번
+-- 수강신청을 하려고 한다. 선수과목 여부를 확인해야 하는데, 선수과목이 존재하는 과목들은
+-- 어떤 과목인지 과목 번호를 조회하시오.
+SELECT CLASS_NO
+FROM TB_CLASS
+WHERE PREATTENDING_CLASS_NO IS NOT NULL;
 
 
 
@@ -135,7 +149,6 @@ FROM TB_STUDENT;
 SELECT STUDENT_ADDRESS
 FROM TB_STUDENT;
 
---------------------------------
 
 -- 3-4 현재 법학과 교수 이름, 주민번호를 나이가 많은 순서로 조회
 SELECT P.PROFESSOR_NAME "교수 이름", P.PROFESSOR_SSN "주민 번호"
@@ -151,7 +164,6 @@ FROM TB_PROFESSOR
 WHERE TO_DATE('PROFESSOR_SSN', 'RRMMDD');
 
 
------------------------------------
 
 -- 3-5 
 -- 2004 2학기에 'C3118100' 과목 수강한 학생들 학점 조회
@@ -167,4 +179,74 @@ WHERE CLASS_NO = 'C3118100';
 
 -- FM : 양쪽 공백 제거
 -- 9.00 은  9 오른쪽정렬 0은 왼쪽 정렬하여 빈칸에 숫자를 채운다는 뜻으로 포맷을 지정
+-- USING 절을 쓰면 별칭 사용이 안 된다는데...
+-- 될 때가 있고 안 될 때가 있기 때문에 대체로 USING 말고 ON 으로 쓰자는 추세
 
+
+-- 3-6
+-- 학생 번호, 학생 이름, 학과 이름을 학생 이름 오름차순으로 조회하시오.
+SELECT 
+	STUDENT_NO,
+	STUDENT_NAME, 
+	DEPARTMENT_NAME
+FROM TB_STUDENT
+JOIN TB_DEPARTMENT USING(DEPARTMENT_NO)
+ORDER BY STUDENT_NAME ASC;
+
+
+-- 3-7
+-- 춘 기술대학교의 과목 이름, 해당 과목을 수업하는 학과 이름을 조회하시오.
+SELECT 
+	CLASS_NAME,
+	DEPARTMENT_NAME
+FROM TB_CLASS
+JOIN TB_DEPARTMENT USING(DEPARTMENT_NO);
+
+
+-- 3-8
+-- 과목, 해당 과목 교수 이름을 조회하시오.
+SELECT
+	CLASS_NAME,
+	PROFESSOR_NAME
+FROM TB_CLASS
+JOIN TB_CLASS_PROFESSOR USING(CLASS_NO)
+JOIN TB_PROFESSOR USING(PROFESSOR_NO);
+
+
+-- 3-9
+-- 8번의 결과 중 '인문 사회' 계열에 속한
+-- 과목명, 교수이름을 과목명 오름차순으로 조회하시오
+SELECT
+	CLASS_NAME,
+	PROFESSOR_NAME
+FROM TB_CLASS CLA
+JOIN TB_CLASS_PROFESSOR USING(CLASS_NO)
+JOIN TB_PROFESSOR USING(PROFESSOR_NO)
+JOIN TB_DEPARTMENT DEP ON (CLA.DEPARTMENT_NO = DEP.DEPARTMENT_NO)
+WHERE CATEGORY = '인문사회'
+ORDER BY CLASS_NAME ASC;
+
+
+-- 3-10
+-- 음악학과 학생들의 학번, 학생이름, 전체 평점 조회
+-- 단 평점은 소수점 1자리까지만 반올림
+
+SELECT STU.STUDENT_NO, STUDENT_NAME, ROUND(AVG(POINT), 1)
+FROM TB_STUDENT STU
+JOIN TB_DEPARTMENT DEP ON (STU.DEPARTMENT_NO = DEP.DEPARTMENT_NO)
+JOIN TB_GRADE GRA ON (STU.STUDENT_NO = GRA.STUDENT_NO)
+WHERE DEPARTMENT_NAME = '음악학과'
+GROUP BY STU.STUDENT_NO, STUDENT_NAME;
+-- 별칭 붙일 경우 필요한 모든 구절에 별칭으로 테이블 구분 해줘야 함!
+
+-- 3-11 
+-- 학번이 A313047인 학생의 학과 이름, 학생이름, 지도교수 이름 조회
+SELECT DEPARTMENT_NAME, STUDENT_NAME, PROFESSOR_NAME
+FROM TB_STUDENT STU
+JOIN TB_PROFESSOR FRO ON (STU.COACH_PROFESSOR_NO = FRO.PROFESSOR_NO)
+JOIN TB_DEPARTMENT DEP ON (STU.DEPARTMENT_NO = DEP.DEPARTMENT_NO)
+WHERE STUDENT_NO = 'A313047';
+
+
+-- 3-12 
+-- 07년도 인간관계론 과목을 수강한 학생을 찾아 학생이름과 수강학기 조회하는 SQL작성 
