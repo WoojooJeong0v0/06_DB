@@ -93,3 +93,63 @@ LEFT JOIN DEPARTMENT ON EMPLOYEE.DEPT_CODE = DEPARTMENT.DEPT_ID
 WHERE SALARY BETWEEN 4000000 AND 6000000 
 AND DECODE(SUBSTR(EMP_NO, 8, 1), '1', 'M', '2', 'F') = 'M'
 ORDER BY SALARY ASC;
+
+
+
+-- 240828 
+-- 모든 user 조회하기
+SELECT
+	USER_NO,
+	USER_ID,
+	USER_PW,
+	USER_NAME,
+	TO_CHAR(ENROLL_DATE, 'YYYY"년" MM"월" DD"일"') ENROLL_DATE
+FROM TB_USER
+ORDER BY USER_NO ASC;
+
+
+-- 검색어가 이름에 포함된 유저 찾기
+SELECT
+	USER_NO,
+	USER_ID,
+	USER_PW,
+	USER_NAME,
+	TO_CHAR(ENROLL_DATE, 'YYYY"년" MM"월" DD"일"') ENROLL_DATE
+FROM TB_USER
+WHERE USER_NAME LIKE '%' || ? || '%'
+ORDER BY USER_NO ASC;
+
+
+-- 유저 넘버 선택하여 삭제
+DELETE 
+FROM TB_USER
+WHERE USER_NO = ?;
+
+-- 일치하는 유저넘버 있을 경우 : 1행 삭제
+-- 없을 경우 : 0행 삭제
+
+SELECT * FROM TB_USER;
+
+-- 아이디 비밀번호 일치하는 select
+SELECT USER_NO
+FROM TB_USER
+WHERE USER_ID = 'user08'
+AND USER_PW = 'pass08';
+
+-- 아이디, 비밀번호 일치하는 회원 이름 수정
+-- USER_NO
+-- 아이디, 패스워드 두 개 확인보다
+-- 빠르고 확실한 USER_NO 로 구분하기
+UPDATE TB_USER
+ SET 
+ USER_NAME = ?
+WHERE USER_NO = ?;
+
+ROLLBACK;
+
+-- 중복 아이디 있는지 조회
+-- 중복이면 1, 아니면 0
+
+SELECT COUNT(*)
+FROM TB_USER
+WHERE USER_ID = 'user08';
