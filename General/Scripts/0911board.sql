@@ -95,3 +95,52 @@ SET
 WHERE 
 	MEMBER_NO = ?;
 	--로그인 한 사람의 No를 받아와야 함
+
+
+-- 불필요한 데이터 삭제
+DELETE "MEMBER" 
+WHERE MEMBER_NO = 9;
+
+
+-- 02 회원 정보 수정
+UPDATE "MEMBER"
+SET
+	MEMBER_ADDRESS = '03180,서울 종로구 경교장길 5,test'
+WHERE
+MEMBER_NO = 2;
+
+UPDATE "MEMBER"
+SET
+	MEMBER_ADDRESS = '03180,서울 종로구 경교장길 5,test'
+WHERE
+MEMBER_NO = 3;
+
+
+--회원 탈퇴 상태 변경
+ UPDATE "MEMBER"
+ SET
+ 	MEMBER_DEL_FL = DECODE(MEMBER_DEL_FL, 'Y','N','Y')
+ WHERE 
+	MEMBER_NO = ?;
+	
+
+-- 간단한 테이블 생성 (파일 업로드 테스트용)
+CREATE TABLE TB_FILE_TEST(
+	FILE_NO NUMBER PRIMARY KEY,
+	FILE_ORIGINAL_NAME VARCHAR2(300), -- 원본 파일명
+	FILE_RENAME VARCHAR2(300), -- 변경된 파일 명
+	FILE_PATH VARCHAR2(300), -- 파일 저장된 폴더 명
+	UPLOAD_DATE DATE DEFAULT CURRENT_DATE -- 저장된 날짜
+);
+
+--DROP TABLE TB_FILE_TEST;
+
+CREATE SEQUENCE SEQ_FILE_NO NOCACHE; -- 시퀀스 생성
+
+SELECT * FROM "TB_FILE_TEST";
+
+UPDATE TB_FILE_TEST
+SET
+	FILE_PATH = '/images/test/';
+	
+COMMIT;
