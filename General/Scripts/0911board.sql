@@ -145,7 +145,7 @@ SET
 	
 COMMIT;
 
----------------------- 1001
+---------------------- 10/01
 
 CREATE TABLE "MEMBER" (
 	"MEMBER_NO"	NUMBER		NOT NULL,
@@ -384,3 +384,158 @@ ADD CONSTRAINT "CHK_COMMENT_DEL_FL"
 CHECK(COMMENT_DEL_FL IN ('Y', 'N'));
 
 
+-------------------------------10/02
+/*게시판 종류*/
+INSERT INTO "BOARD_TYPE" VALUES (1, '공지 사항');
+INSERT INTO "BOARD_TYPE" VALUES (2, '자유게시판');
+INSERT INTO "BOARD_TYPE" VALUES (3, '정보게시판');
+
+COMMIT;
+-----------------------------------
+
+/*게시글 번호 시퀀스 생성*/
+CREATE SEQUENCE SEQ_BOARD_NO NOCACHE;
+
+/*PL/SQL 이용해서 BOARD 테이블에 샘플 데이터 삽입*/
+BEGIN
+	FOR I IN 1..2000 LOOP
+		INSERT INTO "BOARD"
+		VALUES(
+			SEQ_BOARD_NO.NEXTVAL,
+			SEQ_BOARD_NO.CURRVAL || '번째 게시글',
+			SEQ_BOARD_NO.CURRVAL || '번째 게시글 내용입니다',
+			DEFAULT, DEFAULT, DEFAULT, DEFAULT,
+			1,
+			CEIL(DBMS_RANDOM.VALUE(0,3))
+		);
+	END LOOP;
+END;
+
+-- ALT + X 로 실행
+
+-- 삽입된 행의 개수 확인
+SELECT COUNT(*) FROM BOARD;
+
+COMMIT; -- 확인되면 COMMIT
+
+-- 게시판 종류 별로 샘플 데이터 개수 확인
+SELECT BOARD_CODE, COUNT(*)
+FROM BOARD
+GROUP BY BOARD_CODE
+ORDER BY BOARD_CODE ASC;
+
+----------------------------
+
+/*댓글 번호 시퀀스 생성*/
+CREATE SEQUENCE SEQ_COMMENT_NO NOCACHE;
+
+/*댓글 테이블 COMMENT 샘플 데이터 삽입*/
+BEGIN
+	FOR I IN 1..3000 LOOP
+		INSERT INTO "COMMENT"
+		VALUES(
+			SEQ_COMMENT_NO.NEXTVAL,
+			SEQ_COMMENT_NO.CURRVAL || '번째 댓글',
+			DEFAULT, DEFAULT,
+			1,
+			CEIL(DBMS_RANDOM.VALUE(0,1999)),
+			NULL
+		);
+	END LOOP;
+END;
+
+-- 1은 회원번호, NULL은 부모 댓글 
+
+SELECT COUNT(*) FROM "COMMENT";
+COMMIT;
+
+-- 게시글 번호별 작성된 댓글 개수 조회
+ 
+SELECT BOARD_NO, COUNT(*) 
+FROM "COMMENT"
+GROUP BY BOARD_NO
+ORDER BY BOARD_NO DESC;
+
+
+
+------------------------------------
+
+/*
+ * 특정 게시판(BOARD_CODE)에 
+ * 삭제되지 않은 게시글 목록 조회
+ * 
+ * - 조회된 행 번호 : ROWNUM 또는 ROW_NUMBER() 이용// 행의 번호 매김
+ * 	게시글 번호, 제목, 조회수, 작성일 : BOARD 테이블 컬럼
+ * 	작성자 닉네임 : MEMBER 테이블
+ * 	댓글 수 : COMMENT 테이블에서 BOARD_NO 별 댓글 개수 COUNT (*)
+ *  좋아요 개수 : BOARD_LIKE 테이블에서 BOARD_NO 별 댓글 개수 COUNT(*)
+ * 
+ * - 작성일은 몇 초/분/시간 전 또는 YYYY-MM-DD 형식으로 조회
+ * 
+ * - 가장 최근 글이 제일 처음 조회
+ * (시퀀스 번호 제일 큰 번호가 가장 마지막에 만들어짐,
+ * 시퀀스 번호로 만들어진 BOARD_NO 이용)
+ * */
+
+-- ROW_NUMBER() OVER (ORDER BY BOARD_NO ASC) "RNUM"
+---> BOARD_NO 오름차순 정렬 후 조회된 행의 번호를 지정
+--- + GOEKD ZJFFJADMF "RNUM"으로 지정
+---- 연속되지 않은 pk대신 연속된 숫자 만드려고 사용함
+
+-- 상관 서브쿼리 해석 순서
+-- 1) 메인 쿼리 1행 해석
+-- 2) 서브 쿼리에서 메인쿼리 1행 조회 결과를 이용->해석
+-- 3) 다시 메인쿼리 해석
+
+-- 내가 원하는 게시판 형태로 나오게
+
+SELECT
+	ROW_NUMBER() OVER (ORDER BY BOARD_NO ASC) "RNUM",
+	BOARD_NO,
+	BOARD_TITLE,
+	READ_COUNT,
+	MEMBER_NICKNAME,
+	(SELECT COUNT(*) 
+	FROM "COMMENT" C 
+	WHERE C.BOARD_NO = B.BOARD_NO) AS "COMMENT_COUNT",
+	(SELECT COUNT(*)
+	FROM "BOARD_LIKE" L
+	WHERE L.BOARD_NO = B.BOARD_NO) AS "LIKE_COUNT",
+	CASE 
+		WHEN CURRENT_DATE - BOARD_WRITE_DATE < 1 / 24 / 60
+		THEN FLOOR((CURRENT_DATE - BOARD_WRITE_DATE)*24*60*60) || '초 전'
+		WHEN CURRENT_DATE - BOARD_WRITE_DATE < 1 / 24
+		THEN FLOOR((CURRENT_DATE - BOARD_WRITE_DATE)*24*60) || '분 전'
+		WHEN CURRENT_DATE - BOARD_WRITE_DATE < 1
+		THEN FLOOR((CURRENT_DATE - BOARD_WRITE_DATE)*24) || '시간 전'
+		ELSE TO_CHAR(BOARD_WRITE_DATE, 'YYYY-MM-DD')
+	END AS "BOARD_WRITE_DATE"
+FROM
+	"BOARD" B
+JOIN
+	"MEMBER" M ON (B.MEMBER_NO = M.MEMBER_NO)
+WHERE
+	BOARD_DEL_FL = 'N' -- 삭제 안 된 글
+AND
+	BOARD_CODE = 1 -- 게시판 종류
+ORDER BY
+	RNUM DESC;
+-- RNUM 또는 BOARD_NO 정렬
+
+-- DATE 타입끼리 연산하면 며칠 차이 (일 단위) 로 결과가 나온다!
+SELECT CURRENT_DATE 
+	- TO_DATE('2024-10-01 10:36:00', 
+			  'YYYY-MM-DD HH24:MI:SS')
+FROM DUAL;
+
+-- 1 / 24 / 60  일 / 시 / 분 == 1분 / 1분보다 작다면
+-- THEN FLOOR((CURRENT_DATE - BOARD_WRITE_DATE)*24*60*60) 시/분/초 (초단위 계산)
+
+		INSERT INTO "BOARD"
+		VALUES(
+			SEQ_BOARD_NO.NEXTVAL,
+			SEQ_BOARD_NO.CURRVAL || '번째 게시글',
+			SEQ_BOARD_NO.CURRVAL || '번째 게시글 내용입니다',
+			DEFAULT, DEFAULT, DEFAULT, DEFAULT,
+			1,
+			1);
