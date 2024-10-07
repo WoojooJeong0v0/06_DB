@@ -143,6 +143,27 @@
 					"include": ["SPRING_JSH"]
 				}
 			]
+		},
+		"oracle_thin-1926625e6c8-7f1b573daeb12020": {
+			"provider": "oracle",
+			"driver": "oracle_thin",
+			"name": "khj-1.xyz",
+			"save-password": true,
+			"configuration": {
+				"host": "khj-1.xyz",
+				"port": "10000",
+				"database": "XE",
+				"url": "jdbc:oracle:thin:@//khj-1.xyz:10000/XE",
+				"configurationType": "MANUAL",
+				"home": "C:\\app\\user1\\product\\18.0.0\\dbhomeXE",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"provider-properties": {
+					"@dbeaver-connection-type@": "BASIC",
+					"@dbeaver-sid-service@": "SERVICE"
+				},
+				"auth-model": "oracle_native"
+			}
 		}
 	},
 	"connection-types": {
