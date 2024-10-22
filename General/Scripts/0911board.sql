@@ -695,3 +695,12 @@ COMMIT;
 
 INSERT INTO "BOARD_TYPE"
 VALUES(4, '테스트');
+
+-- 1010 
+-- 게시글 삭제 상태 N -> Y로 변경
+ UPDATE "BOARD"
+ SET
+ 	BOARD_DEL_FL = DECODE(BOARD_DEL_FL, 'Y','N','Y')
+ WHERE 
+	BOARD_NO = ?
+ AND MEMBER_NO = ?;
