@@ -163,7 +163,42 @@
 					"@dbeaver-sid-service@": "SERVICE"
 				},
 				"auth-model": "oracle_native"
-			}
+			},
+			"filters": [
+				{
+					"type": "org.jkiss.dbeaver.ext.oracle.model.OracleSchema",
+					"enabled": true,
+					"include": ["TEAM_JMT","TEAM_BCH"]
+				}
+			]
+		},
+		"oracle_thin-1931e7b4c64-d84f99d667e10c": {
+			"provider": "oracle",
+			"driver": "oracle_thin",
+			"name": "BCS_khj-1.xyz 2",
+			"save-password": true,
+			"configuration": {
+				"host": "khj-1.xyz",
+				"port": "10000",
+				"database": "XE",
+				"url": "jdbc:oracle:thin:@//khj-1.xyz:10000/XE",
+				"configurationType": "MANUAL",
+				"home": "C:\\app\\user1\\product\\18.0.0\\dbhomeXE",
+				"type": "dev",
+				"closeIdleConnection": true,
+				"provider-properties": {
+					"@dbeaver-connection-type@": "BASIC",
+					"@dbeaver-sid-service@": "SERVICE"
+				},
+				"auth-model": "oracle_native"
+			},
+			"filters": [
+				{
+					"type": "org.jkiss.dbeaver.ext.oracle.model.OracleSchema",
+					"enabled": true,
+					"include": ["TEAM_BCS"]
+				}
+			]
 		}
 	},
 	"connection-types": {
